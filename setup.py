@@ -45,7 +45,7 @@ setup(
     zip_safe=False,
     platforms="any",
     install_requires=[
-        "python-box<4.0.0",
+        "python-box<5.0.0",
         "python-dotenv<=0.10.3",
         "toml<=0.10.0",
         "click<=7.0",
