@@ -7,6 +7,7 @@ except ImportError:  # pragma: no cover
     Config = object
 
 
+from importlib import import_module
 from dynaconf import LazySettings
 
 
@@ -127,12 +128,6 @@ class DynaconfConfig(Config):
     - Update with data in environmente vars `ENV_FOR_DYNACONF_`
     """
 
-    def get(self, key, default=None):
-        """Gets config from dynaconf variables
-        if variables does not exists in dynaconf try getting from
-        `app.config` to support runtime settings."""
-        return self._settings.get(key, Config.get(self, key, default))
-
     def __init__(self, _settings, *args, **kwargs):
         """perform the initial load"""
         super(DynaconfConfig, self).__init__(*args, **kwargs)
@@ -162,3 +157,19 @@ class DynaconfConfig(Config):
 
     def __call__(self, name, *args, **kwargs):
         return self.get(name, *args, **kwargs)
+
+    def get(self, key, default=None):
+        """Gets config from dynaconf variables
+        if variables does not exists in dynaconf try getting from
+        `app.config` to support runtime settings."""
+        return self._settings.get(key, Config.get(self, key, default))
+
+    def load_extensions(self, app, key="EXTENSIONS"):
+        """Loads flask extensions dynamically."""
+        for extension in app.config[key]:
+            # Split data in form `extension.path:factory_function`
+            module_name, factory = extension.split(":")
+            # Dynamically import extension module.
+            ext = import_module(module_name)
+            # Invoke factory passing app.
+            getattr(ext, factory)(app)

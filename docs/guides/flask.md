@@ -98,3 +98,7 @@ FlaskDynaconf(
 ```
 
 Then the working environment can now be switched using `export PROJECTNAME_ENV=production`
+
+## Loading Flask Extensions Dynamically
+
+TO BE WRITTEN!!!
